@@ -22,10 +22,17 @@ if __name__ == '__main__':
         'token': 'glados.one'
     }
     for cookie in cookies:
+        if not cookie:
+            print("⚠️ 未检测到有效 cookie，跳过")
+            continue
         checkin = requests.post(url,headers={'cookie': cookie ,'referer': referer,'origin':origin,'user-agent':useragent,'content-type':'application/json;charset=UTF-8'},data=json.dumps(payload))
         state =  requests.get(url2,headers={'cookie': cookie ,'referer': referer,'origin':origin,'user-agent':useragent})
     #--------------------------------------------------------------------------------------------------------#  
-        state_json = state.json()
+        try:
+            state_json = state.json()
+        except Exception as e:
+            print("❌ 无法解析 JSON:", e)
+            continue
         if 'data' not in state_json:
             print('❌ 获取状态失败，返回内容:', state_json)
             requests.get('http://www.pushplus.plus/send?token=' + sckey + '&content=COOKIE失效或接口错误')
