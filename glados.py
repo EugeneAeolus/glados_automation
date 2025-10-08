@@ -25,9 +25,15 @@ if __name__ == '__main__':
         checkin = requests.post(url,headers={'cookie': cookie ,'referer': referer,'origin':origin,'user-agent':useragent,'content-type':'application/json;charset=UTF-8'},data=json.dumps(payload))
         state =  requests.get(url2,headers={'cookie': cookie ,'referer': referer,'origin':origin,'user-agent':useragent})
     #--------------------------------------------------------------------------------------------------------#  
-        time = state.json()['data']['leftDays']
+        state_json = state.json()
+        if 'data' not in state_json:
+            print('❌ 获取状态失败，返回内容:', state_json)
+            requests.get('http://www.pushplus.plus/send?token=' + sckey + '&content=COOKIE失效或接口错误')
+            continue
+        time = state_json['data']['leftDays']
         time = time.split('.')[0]
-        email = state.json()['data']['email']
+        email = state_json['data']['email']
+
         if 'message' in checkin.text:
             mess = checkin.json()['message']
             print("签到成功") # 日志输出
